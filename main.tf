@@ -26,12 +26,12 @@ resource "aws_ses_domain_dkim" "amazonses_dkim_records" {
 }
 
 resource "aws_ses_receipt_rule_set" "rule_set" {
-  depends_on = ["aws_ses_receipt_rule_set.rule_set"]
   count         = "${length(var.rule_sets) != 0 ? length(var.rule_sets): 0 }"
   rule_set_name = "${element(var.rule_sets, count.index)}"
 }
 
 resource "aws_ses_active_receipt_rule_set" "active_rule_set" {
+  depends_on    = ["aws_ses_receipt_rule_set.rule_set"]
   count         = "${var.active_rule_set != "" ? 1 : 0 }"
   rule_set_name = "${var.active_rule_set}"
 }
@@ -41,4 +41,15 @@ resource "aws_ses_receipt_filter" "filter" {
   name   = "${element(var.receipt_filter_name, count.index)}"
   cidr   = "${element(var.receipt_filter_cidr, count.index)}"
   policy = "${element(var.receipt_filter_policy, count.index)}"
+}
+
+resource "aws_ses_receipt_rule" "rule" {
+  depends_on    = ["aws_ses_receipt_rule_set.rule_set"]
+  count         = "${var.receipt_rule_name != "" ? 1 : 0 }"
+  name          = "${var.receipt_rule_name}"
+  rule_set_name = "${var.receipt_rule_rule_set_name}"
+  recipients    = ["${var.receipt_rule_recipients}"]
+  enabled       = "${var.receipt_rule_enabled}"
+  scan_enabled  = "${var.receipt_rule_scan_enabled}"
+  tls_policy    = "${var.receipt_rule_tls_policy}"
 }

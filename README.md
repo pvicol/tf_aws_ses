@@ -24,6 +24,7 @@ This is work in progress. Module subjected to change without notice.
 Terraform does not support importing all resources. The following resources/variables cannot be imported:
 
 * \[`aws_ses_active_receipt_rule_set` - `active_rule_set`\]
+* \[`aws_ses_receipt_rule` - `receipent_rule_*`\]
 
 Use of these variables on imported resources might override or recreate imported resources.
 
